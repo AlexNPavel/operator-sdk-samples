@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vault-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: vault-operator
+  template:
+    metadata:
+      labels:
+        name: vault-operator
+    spec:
+      containers:
+        - name: vault-operator
+          image: quay.io/example/vault-operator:v0.0.1
+          ports:
+          - containerPort: 60000
+            name: metrics
+          command:
+          - vault-operator
+          imagePullPolicy: Always
+          env:
+            - name: WATCH_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: OPERATOR_NAME
+              value: "vault-operator"

@@ -1,0 +1,86 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: memcacheds.cache.example.com
+spec:
+  group: cache.example.com
+  names:
+    kind: Memcached
+    listKind: MemcachedList
+    plural: memcacheds
+    singular: memcached
+  scope: Namespaced
+  version: v1alpha1
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: memcached-operator-test
+spec:
+  restartPolicy: Never
+  containers:
+  - name: memcached-operator-test
+    image: quay.io/coreos/operator-sdk-dev:memcached-operator-test
+    imagePullPolicy: Always
+    command: ["/go-test.sh"]
+    resources:
+      requests:
+        cpu: 1
+    env:
+      - name: TEST_NAMESPACE
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.namespace
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: memcached-operator-test
+rules:
+- apiGroups:
+  - cache.example.com
+  resources:
+  - "*"
+  verbs:
+  - "*"
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - services
+  - endpoints
+  - persistentvolumeclaims
+  - events
+  - configmaps
+  - secrets
+  verbs:
+  - "*"
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  - daemonsets
+  - replicasets
+  - statefulsets
+  verbs:
+  - "*"
+- apiGroups:
+  - "rbac.authorization.k8s.io"
+  resources:
+  - "*"
+  verbs:
+  - "*"
+
+---
+
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: default-account-memcached-operator-test
+subjects:
+- kind: ServiceAccount
+  name: default
+roleRef:
+  kind: Role
+  name: memcached-operator-test
+  apiGroup: rbac.authorization.k8s.io
