@@ -14,7 +14,7 @@ mkdir -p ${BIN_DIR}
 PROJECT_NAME="memcached-operator"
 REPO_PATH="github.com/operator-framework/operator-sdk-samples/memcached-operator"
 BUILD_PATH="${REPO_PATH}/cmd/${PROJECT_NAME}"
-TEST_PATH="${REPO_PATH}/test/e2e"
+TEST_PATH="${REPO_PATH}/${TEST_LOCATION}"
 echo "building "${PROJECT_NAME}"..."
 GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ${BIN_DIR}/${PROJECT_NAME} $BUILD_PATH
 if $ENABLE_TESTS ; then
